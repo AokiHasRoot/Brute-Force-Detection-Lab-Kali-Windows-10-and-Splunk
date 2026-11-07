@@ -20,7 +20,7 @@ This project simulates a brute force authentication attack against a Windows 10 
 
 **Networking:** Both VMs sit on the same private virtual network (`192.168.10.0/24`), allowing Kali to reach Windows directly over RDP (port 3389) for the attack.
 
-**[Insert screenshot: network diagram or `ipconfig` / `ip a` output from both machines]**
+<img width="900" height="665" alt="NetworkDiagram" src="https://github.com/user-attachments/assets/d06ed573-fc2b-4a3e-9d4b-521916d16681" />
 
 ---
 
@@ -39,8 +39,8 @@ Special Logon         Success
 
 `Logon: Success and Failure` is what generates Event ID 4624 (successful logon) and Event ID 4625 (failed logon) — the two events this project relies on.
 
-**[Insert screenshot: auditpol output]**
-*(You have this — the PowerShell screenshot showing `auditpol /get /category:"Logon/Logoff"`)*
+<img width="511" height="256" alt="lab-configuration" src="https://github.com/user-attachments/assets/5afe84bd-5cd0-4702-93d1-0b051464da31" />
+
 
 ### Splunk Data Inputs
 
@@ -66,8 +66,7 @@ renderXml = true
 source = XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
 ```
 
-**[Insert screenshot: inputs.conf]**
-*(You have this already)*
+<img width="570" height="644" alt="Screenshot 2026-11-07 021525" src="https://github.com/user-attachments/assets/365a063f-798a-460d-8e86-4244a6b4c8aa" />
 
 ### Versions
 
@@ -86,8 +85,8 @@ crowbar -b rdp -u bob -C passwords.txt -s 192.168.10.40/32
 
 **Target:** `192.168.10.40:3389` (Windows 10 host, local account `bob`)
 
-**[Insert screenshot: Crowbar terminal output]**
-*(You have this — the "AokiHasRoot" terminal banner run)*
+<img width="1892" height="545" alt="Screenshot 2026-11-07 110211" src="https://github.com/user-attachments/assets/6b7725cd-7608-4aaf-9e86-878c49ca157b" />
+
 
 **Result:** Crowbar reported `RDP-SUCCESS` for every password in the wordlist — 22 out of 22 attempts, including obviously incorrect ones. This is inconsistent with how a brute force against a single valid password should behave, and is addressed in the Findings section below.
 
@@ -98,6 +97,9 @@ To verify Crowbar's results, the same wordlist was run against Hydra:
 ```bash
 hydra -l bob -P passwords.txt rdp://192.168.10.40 -t 4 -W 3
 ```
+
+<img width="1900" height="909" alt="Screenshot 2026-11-07 115735" src="https://github.com/user-attachments/assets/b3511f5f-e9de-40ec-a70d-29295719089a" />
+
 
 **Result:** Hydra's RDP module (labeled "experimental" by its own developers) failed to establish a connection for any attempt (`[ERROR] freerdp: The connection failed to establish`), returning zero valid passwords found. This is a known limitation of Hydra's FreeRDP backend in some lab configurations.
 
@@ -120,8 +122,7 @@ index=endpoint source="WinEventLog:Security" EventCode=4625
 
 **Result:** All 91 failed logon events in the 24-hour window traced back to a single source: `192.168.10.250` (Kali).
 
-**[Insert screenshot: stats-by-source-IP table]**
-*(You have this)*
+<img width="1909" height="825" alt="Screenshot 2026-11-07 105345" src="https://github.com/user-attachments/assets/05e24f74-3543-447d-b8fa-889799657832" />
 
 ### 2. Enumeration vs. password guessing
 
@@ -144,14 +145,11 @@ index=endpoint source="WinEventLog:Security" EventCode=4625
 
 **Analysis:** `bob` is a real account, yet most attempts against it returned "user name does not exist" rather than "bad password." The `Account Domain` field explains why: it was populated (`ELIDSI`) on the 4 attempts that returned `0xC000006A`, but blank (`-`) on the others. When the domain wasn't resolved, Windows couldn't match `bob` to the real account and returned the enumeration error instead of the password error — a byproduct of how the attack tool qualified (or failed to qualify) the username on each attempt.
 
-**[Insert screenshot: this stats table]**
-*(You have this)*
+<img width="1906" height="827" alt="Screenshot 2026-11-07 114850" src="https://github.com/user-attachments/assets/e98088a8-994a-4c30-9a76-a3f2e1796cea" />
 
-**[Insert screenshot: raw 4625 event — elidsibob / 0xC0000064]**
-*(You have this)*
 
-**[Insert screenshot: raw 4625 event — bob / 0xC000006A]**
-*(You have this)*
+<img width="1915" height="910" alt="Screenshot 2026-11-07 115001" src="https://github.com/user-attachments/assets/8397f1fb-fb23-4417-bfff-0bd418cd6387" />
+
 
 ### 3. Volume and timing
 
@@ -164,8 +162,8 @@ index=endpoint source="WinEventLog:Security" EventCode=4625
 
 The chart shows four distinct attack bursts across the 24-hour window, each corresponding to a separate Crowbar/Hydra run — evidence of repeated, deliberate attack attempts rather than background noise.
 
-**[Insert screenshot: timechart / column chart visualization]**
-*(You have this)*
+<img width="1897" height="902" alt="Screenshot 2026-11-07 105244" src="https://github.com/user-attachments/assets/56b68464-49df-4369-b6b3-86faf4c771de" />
+
 
 ### 4. Confirmed compromise
 
