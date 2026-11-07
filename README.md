@@ -46,26 +46,6 @@ Special Logon         Success
 
 Windows event logs are collected via a local forwarder configuration feeding the `endpoint` index:
 
-```
-[WinEventLog://Security]
-index = endpoint
-disabled = false
-
-[WinEventLog://Application]
-index = endpoint
-disabled = false
-
-[WinEventLog://System]
-index = endpoint
-disabled = false
-
-[WinEventLog://Microsoft-Windows-Sysmon/Operational]
-index = endpoint
-disabled = false
-renderXml = true
-source = XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
-```
-
 <img width="570" height="644" alt="Screenshot 2026-11-07 021525" src="https://github.com/user-attachments/assets/365a063f-798a-460d-8e86-4244a6b4c8aa" />
 
 ### Versions
@@ -164,7 +144,6 @@ The chart shows four distinct attack bursts across the 24-hour window, each corr
 
 <img width="1897" height="902" alt="Screenshot 2026-11-07 105244" src="https://github.com/user-attachments/assets/56b68464-49df-4369-b6b3-86faf4c771de" />
 
-
 ### 4. Confirmed compromise
 
 ```spl
@@ -186,9 +165,6 @@ At **08:58:20.009 AM**, 23 seconds after the last captured password-guess attemp
 | Authentication Package | NTLM V2 |
 
 This is the **single, authoritative successful logon** recorded by Windows — in contrast to Crowbar's console, which claimed 22 successes.
-
-**[Insert screenshot: raw 4624 event]**
-*(You have this)*
 
 ### Summary of the attack chain
 
