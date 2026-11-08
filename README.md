@@ -23,27 +23,13 @@ The Windows 10 client is joined to the `Eli.dsi` Active Directory domain, so it 
 
 On the Windows 10 client, the forwarder is configured to collect:
 
-```
-[WinEventLog://Application]
-index = endpoint
-disabled = false
+<img width="570" height="644" alt="Screenshot 2026-11-07 021525" src="https://github.com/user-attachments/assets/c88b29ba-958b-4d53-ac0b-f9f0edce8086" />
 
-[WinEventLog://Security]
-index = endpoint
-disabled = false
 
-[WinEventLog://System]
-index = endpoint
-disabled = false
-
-[WinEventLog://Microsoft-Windows-Sysmon/Operational]
-index = endpoint
-disabled = false
-renderXml = true
-source = XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
-```
 
 Local audit policy was confirmed with `auditpol /get /category:"Logon/Logoff"`, which showed **Logon** auditing set to **Success and Failure** — the setting required for Event ID 4625 to be generated and captured.
+
+<img width="511" height="256" alt="lab-configuration" src="https://github.com/user-attachments/assets/1fe382c8-951b-4c1f-8e07-af03de267faf" />
 
 ## Attacks Simulated
 
